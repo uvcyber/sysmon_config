@@ -52,23 +52,7 @@
 <!--                                 FP:         False Positive Rate                                                        -->
 <!--                                 Author:     Author of rule                                                             -->
 <!--                                                                                                                        -->
-<!--                   Additional Tag Details:                                                                              -->
-<!--                                 Rapid Response Tags: (Optional for Response & Automation)                              -->
-<!--                                         kp=y     Kill process with child processes                                     -->
-<!--                                         kpp=y    Kill Parent Processes & all Child Processes                           -->
-<!--                                         kc=y     Kill network connections                                              -->
-<!--                                         ki=y     Kill Injected Thread                                                  -->
-<!--                                         sd=y     Shutdown System                                                       -->
-<!--                                         fw=y     Add Windows Firewall Rule to block inbound and                        -->
-<!--                                                  outbound network connectivity from process                            -->
-<!--                                         yara=y   Yara Scan file                                                        -->
-<!--                                         ydel=y   Delete on Yara Detection                                              -->
-<!--                                         rf=y     Restore Deleted File                                                  -->
-<!--                                         nr=y     Null route ip                                                         -->
-<!--                                         iso=y    Isolate Host                                                          -->
-<!--                                         SD=y     Service Desk Ticket                                                   -->
-<!--                                         SOC=y    SOC Ticket Creation                                                   -->
-<!--                                                                                                                        -->
+<!--                   Tag Details:                                                                                         -->
 <!--                                 Risk Score ratings: (Risk=??)                                                          -->
 <!--                                         Low Risk:       1-39                                                           -->
 <!--                                         Medium Risk:    40-69                                                          -->
