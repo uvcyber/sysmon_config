@@ -3972,7 +3972,7 @@
     <ProcessTerminate onmatch="include">
       <Rule name="Attack=None,Technique=None,Tactic=None,DS=Process: Process Termination,Level=0,Desc=Process Termination Events in Windows Directory" groupRelation="and">
         <Image condition="begin with">C:\Windows\</Image>
-        <Image condition="excludes">\System32\;Syswow64;sysmon.exe;sysmon64.exe</Image>
+        <Image condition="excludes any">\System32\;\SysWOW64\;sysmon.exe;sysmon64.exe</Image>
       </Rule>
       <Rule name="Attack=None,Technique=None,Tactic=None,DS=Process: Process Termination,Level=0,Desc=Process Termination Events in System32" groupRelation="and">
         <Image condition="begin with">C:\Windows\system32\</Image>
