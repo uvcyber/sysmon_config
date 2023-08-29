@@ -16,7 +16,8 @@
 <!--        Author:       Ultraviolet Cyber Detection Engineering                                                           -->
 <!--        Contributors: @benmontour                                                                                       -->
 <!--        Project:      https://github.com/uvcyber/sysmon_config                                                          -->
-<!--        Version:      Sysmon v15.0                                                                                      -->
+<!--        Sysmon:       15.0                                                                                              -->
+<!--        Config:       1.0.1                                                                                             -->
 <!--        License:      Creative Commons Attribution 4.0                                                                  -->
 <!--                      You may privatize, fork, edit, teach, publish, or deploy                                          -->
 <!--                      for commercial use - with attribution in the text.                                                -->
@@ -5016,7 +5017,7 @@
         <CallTrace condition="contains any">clr.dll+6c23;clr.dll+6b38</CallTrace>
       </Rule>
       <Rule name="Attack=T1055,Tactic=Defense Evasion,Technique=Process Injection,DS=Process: Process Access,Level=0,Desc=Suspicious In-Memory Module Execution 1,Risk=30" groupRelation="and">
-        <CallTrace condition="contains all">C:\Windows\\SYSTEM32\ntdll.dll+;|C:\Windows\System32\KERNELBASE.dll+;|UNKNOWN(</CallTrace>
+        <CallTrace condition="contains all">C:\Windows\SYSTEM32\ntdll.dll+;|C:\Windows\System32\KERNELBASE.dll+;|UNKNOWN(</CallTrace>
         <CallTrace condition="end with">)</CallTrace>
       </Rule>
       <Rule name="Attack=T1055,Tactic=Defense Evasion,Technique=Process Injection,DS=Process: Process Access,Level=0,Desc=Suspicious In-Memory Module Execution 2,Risk=30" groupRelation="and">
@@ -5094,7 +5095,6 @@
       <Rule name="Attack=T1003,Technique=OS Credential Dumping,Tactic=Credential Access,DS=Process: Process Access,Level=0,Desc=Process access with dbghelp,Risk=30" groupRelation="and">
         <CallTrace condition="contains any">dbghelp.dll;dbgcore.dll</CallTrace>
         <TargetImage condition="excludes">C:\Windows\system32\lsass.exe</TargetImage>
-        <SourceImage condition="excludes">C:\wfx32\</SourceImage>
       </Rule>
       <Rule name="Attack=None,Technique=None,Tactic=None,DS=Process: Process Access,Level=0,Desc=Powershell accessing another process memory" groupRelation="and">
         <SourceImage condition="image">powershell.exe</SourceImage>
@@ -5152,22 +5152,6 @@
         <TargetImage condition="excludes">C:\WINDOWS\system32\sihost.exe</TargetImage>
         <TargetImage condition="excludes">C:\Program Files\WindowsApps\Microsoft.MicrosoftOfficeHub</TargetImage>
       </Rule>
-      <Rule name="Attack=None,Technique=None,Tactic=None,DS=Process: Process Access,Level=4,Alert=CobaltStrike BOF using OpenProcess/NtOpenProcess" groupRelation="and">
-        <CallTrace condition="begin with">UNKNOWN</CallTrace>
-      </Rule>
-      <Rule name="Attack=None,Technique=None,Tactic=None,DS=Process: Process Access,Level=4,Alert=Typical ProcessAccess Pattern of CobaltStrike BOF" groupRelation="and">
-        <CallTrace condition="contains">|UNKNOWN(</CallTrace>
-        <CallTrace condition="begin with">C:\WINDOWS\SYSTEM32\ntdll.dll+</CallTrace>
-        <CallTrace condition="contains">|C:\WINDOWS\System32\KERNELBASE.dll+</CallTrace>
-        <CallTrace condition="end with">)</CallTrace>
-        <CallTrace condition="excludes">C:\Program Files\SentinelOne\</CallTrace>
-        <GrantedAccess condition="contains any">0x1028;0x1fffff</GrantedAccess>
-        <SourceImage condition="excludes any">C:\Program Files\SmartGit\bin\;C:\Program Files (x86)\ASUS\Update\;C:\Program Files (x86)\Razer\Synapse3\Service\Razer Synapse Service.exe;C:\Program Files (x86)\Citrix\ICA Client\Receiver\UpdaterService.exe;C:\WINDOWS\SysWOW64\config\systemprofile\Citrix\UpdaterBinaries\;C:\Program Files\Mozilla Firefox\firefox.exe;C:\Program Files\SmartGit\git;\Intel\Driver and Support Assistant\DSAService.exe;C:\Program Files (x86)\N-able Technologies\AutomationManagerAgent\;C:\Program Files (x86)\MspPlatform\RequestHandlerAgent\RequestHandlerAgent.exe;C:\Program Files (x86)\N-able Technologies\Windows Agent\bin\agent.exe;C:\ProgramData\Cavelo\jre\bin\java.exe;C:\Program Files (x86)\N-able Technologies\Windows Software Probe\bin\wsp.exe;C:\Program Files\Cavelo\Cavelo Agent\parser.exe</SourceImage>
-        <SourceImage condition="excludes all">C:\Windows\Microsoft.NET\Framework\;\NGenTask.exe</SourceImage>
-        <TargetImage condition="excludes any">\Intel\Driver and Support Assistant\</TargetImage>
-        <TargetImage condition="excludes any">C:\Program Files\AMD\CNext\CNext\Radeonsoftware.exe;C:\Program Files\ASUS\ARMOURY CRATE Service\ArmouryCrate.UserSessionHelper.exe</TargetImage>
-        <TargetImage condition="excludes all">C:\Windows\Microsoft.NET\Framework\;\ngen.exe</TargetImage>
-      </Rule>
       <Rule name="Attack=None,Technique=None,Tactic=None,DS=Process: Process Access,Level=3,Alert=Potential MalDoc Behavior" groupRelation="and">
         <SourceImage condition="contains any">winword.exe;excel.exe;powerpnt.exe</SourceImage>
         <CallTrace condition="contains all">:\Windows\Microsoft.NET\Framework64\v2.;UNKNOWN</CallTrace>
@@ -5176,14 +5160,9 @@
         <CallTrace condition="contains">UNKNOWN</CallTrace>
         <GrantedAccess condition="contains">0x147a</GrantedAccess>
       </Rule>
-      <Rule name="Attack=T1562.002,Technique=Impair Defenses: Disable Windows Event Logging,Tactic=Defense Evasion,DS=Process: Process Access,Level=4,Alert=SysmonEnte Detection,DS=Process: Process Access,Level=4,Risk=100" groupRelation="and">
+      <Rule name="Attack=T1562.002,Technique=Impair Defenses: Disable Windows Event Logging,Tactic=Defense Evasion,DS=Process: Process Access,Level=4,Alert=SysmonEnte Detection,Risk=100" groupRelation="and">
         <TargetImage condition="contains any">C:\Windows\Sysmon64.exe;C:\Windows\Sysmon.exe</TargetImage>
-        <SourceImage condition="is not">C:\WINDOWS\system32\wbem\wmiprvse.exe</SourceImage>
-        <SourceImage condition="is not">C:\Program Files (x86)\ASUS\Update\AsusUpdate.exe</SourceImage>
-        <SourceImage condition="is not">C:\Program Files\Intel\SUR\QUEENCREEK\x64\esrv_svc.exe</SourceImage>
-        <SourceImage condition="excludes any">C:\ProgramData\Microsoft\Windows Defender\Platform\;\MsMpEng.exe;C:\Program Files (x86)\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe;C:\Program Files (x86)\Google\Update\GoogleUpdate.exe</SourceImage>
         <GrantedAccess condition="contains">0x1400</GrantedAccess>
-        <CallTrace condition="excludes">C:\Program Files\SentinelOne\</CallTrace>
       </Rule>
       <!-- PROCESS_SUSPEND_RESUME + PROCESS_VM_WRITE: possible memory injection -->
       <Rule name="Attack=T1093,Technique=Process Hollowing,Tactic=Defense Evasion,DS=Process: Process Access,Level=4,Alert=Process Hollowing Detected,Risk=100" groupRelation="and">
@@ -5256,6 +5235,7 @@
         <SourceImage condition="begin with">C:\Program Files (x86)\ESET</SourceImage>
         <SourceImage condition="begin with">C:\Program Files\ESET</SourceImage>
         <SourceImage condition="begin with">C:\ProgramData\Microsoft\Windows Defender\</SourceImage>
+        <SourceImage condition="begin with">C:\Program Files\Bitdefender\Bitdefender Security\</SourceImage>
       </Rule>
     </ProcessAccess>
   </RuleGroup>
@@ -5553,6 +5533,9 @@
       <!--MITRE ATT&CK TECHNIQUE: Create Account-->
       <!--MITRE ATT&CK TECHNIQUE: Create or Modify System Process-->
       <!--MITRE ATT&CK TECHNIQUE: Event Triggered Execution-->
+      <Rule name="Attack=T1546,Technique=Event Triggered Execution,Tactic=Persistence,DS=File: File Creation,Level=2,Alert=VMware Tools Script Config Modified,FP=2,Comment=Legitimate activity can trigger this" groupRelation="and">
+        <TargetFilename condition="end with">\VMware\VMware Tools\tools.conf</TargetFilename>
+      </Rule>
       <!--MITRE ATT&CK TECHNIQUE: External Remote Services-->
       <!--MITRE ATT&CK TECHNIQUE: Hijack Execution Flow-->
       <!--MITRE ATT&CK TECHNIQUE: Implant Internal Image-->
@@ -5838,7 +5821,9 @@
       <!--MITRE ATT&CK TECHNIQUE: Virtualization/Sandbox Evasion-->
       <!--MITRE ATT&CK TECHNIQUE: Weaken Encryption-->
       <!--MITRE ATT&CK TECHNIQUE: XSL Script Processing-->
-
+      <Rule name="Attack=T1220,Technique=XSL Script Processing,Tactic=Defense Evasion,DS=File: File Creation,Level=3,Alert=XSL Script Created,FP=1,Comment=Can be legitimate XML formatting" groupRelation="and">
+        <TargetFilename condition="end with">.xsl</TargetFilename>
+      </Rule>
       <!--MITRE ATT&CK TACTIC: Credential Access-->
       <!--MITRE ATT&CK TECHNIQUE: Adversary-in-the-Middle-->
       <!--MITRE ATT&CK TECHNIQUE: Brute Force-->
@@ -7491,6 +7476,7 @@
         <Image condition="excludes">C:\Program Files\Common Files\Microsoft Shared\ClickToRun\OfficeClickToRun.exe</Image>
         <Image condition="excludes">C:\Program Files\Microsoft Office\root\integration\integrator.exe</Image>
         <Image condition="excludes all">C:\Program Files\Google\Chrome Beta\Application\;\Installer\setup.exe</Image>
+        <Image condition="excludes all">C:\Program Files\Google\Chrome\Application\;\Installer\setup.exe</Image>
         <Image condition="excludes all">C:\Program Files\Common Files\Microsoft Shared\ClickToRun\Updates\;\OfficeClickToRun.exe</Image>
       </Rule>
       <!--MITRE ATT&CK TECHNIQUE: Exploitation for Privilege Escalation-->
@@ -9054,6 +9040,9 @@
       <Rule name="Attack=T1055,Technique=Process Injection,Tactic=Defense Evasion/Privilege Escalation,DS=Named Pipe: Named Pipe Metadata,Level=4,Alert=Covanant C2 Named Pipe Detection,Author=@Cyb3rops/@olafhartong" groupRelation="and">
         <PipeName condition="contains">\gruntsvc</PipeName>
       </Rule>
+      <Rule name="Attack=T1055,Technique=Process Injection,Tactic=Defense Evasion/Privilege Escalation,DS=Named Pipe: Named Pipe Metadata,Level=4,Alert=Havoc C2 Named Pipe Detection,Author=@giomke" groupRelation="and">
+        <PipeName condition="contains">\demon_pipe</PipeName>
+      </Rule>
       <Rule name="Attack=T1055,Technique=Process Injection,Tactic=Defense Evasion/Privilege Escalation,DS=Named Pipe: Named Pipe Metadata,Level=4,Alert=remcom Named Pipe Detection,Risk=100,Author=@Cyb3rops/@olafhartong" groupRelation="and">
         <PipeName condition="contains">\remcom</PipeName>
       </Rule>
@@ -9465,6 +9454,7 @@
       <QueryName condition="end with">.s-microsoft.com</QueryName> <!--Microsoft-->
       <QueryName condition="end with">.skype.com</QueryName> <!--Microsoft | Microsoft default exclusion-->
       <QueryName condition="end with">.skype.net</QueryName> <!--Microsoft | Microsoft default exclusion-->
+      <QueryName condition="end with">.visualstudio.com</QueryName> <!--Microsoft-->
       <QueryName condition="end with">.windows.com</QueryName> <!--Microsoft-->
       <QueryName condition="end with">.windows.net.nsatc.net</QueryName> <!--Microsoft-->
       <QueryName condition="end with">.windowsupdate.com</QueryName> <!--Microsoft-->
@@ -9877,7 +9867,8 @@
         <Image condition="begin with">C:\Users\</Image>
         <Image condition="contains">Content.Outlook</Image>
       </Rule>
-      <Rule name="Attack=T1036.008,Technique=Masquerading: Masquerade File Type,Tactic=Defense Evasion,DS=File: File Creation,Level=4,Alert=Pe File Detected under Unusual File extension,Risk=10" groupRelation="and">
+      <!-- Disabling this for now due to large volume of legitimate events -->
+      <!-- <Rule name="Attack=T1036.008,Technique=Masquerading: Masquerade File Type,Tactic=Defense Evasion,DS=File: File Creation,Level=4,Alert=Pe File Detected under Unusual File extension,Risk=10" groupRelation="and">
         <TargetFilename condition="not end with">.exe</TargetFilename>
         <TargetFilename condition="not end with">.dll</TargetFilename>
         <TargetFilename condition="not end with">.sys</TargetFilename>
@@ -9892,7 +9883,7 @@
         <TargetFilename condition="not end with">.mui</TargetFilename>
         <TargetFilename condition="not end with">.ime</TargetFilename>
         <TargetFilename condition="not end with">.tsp</TargetFilename>
-      </Rule>
+      </Rule> -->
       <Rule name="Attack=T1059.001,Technique=Command and Scripting Interpreter: PowerShell,Tactic=Execution,DS=File: File Creation,Level=0,Desc=,Risk=10,Alert=Powershell Creating Executables" groupRelation="and">
         <Image condition="is any">powershell.exe;powershell_ise.exe;pwsh.exe;Sqlps.exe</Image>
       </Rule>
@@ -9911,7 +9902,7 @@
         <TargetFilename condition="begin with">C:\Windows\System32\spool\SERVERS\</TargetFilename> <!-- often used in exploits against print spooler -->
         <TargetFilename condition="begin with">C:\Windows\System32\spool\PRINTERS\</TargetFilename> <!-- often used in exploits against print spooler -->
         <TargetFilename condition="begin with">C:\Windows\Help\</TargetFilename> <!-- often used staging directories -->
-        <TargetFilename condition="begin with">C:\Windows\SysWOW64\Tasks</TargetFilename>
+        <TargetFilename condition="begin with">C:\Windows\SysWOW64\Tasks\</TargetFilename>
         <TargetFilename condition="begin with">C:\ProgramData\Intel</TargetFilename>
         <TargetFilename condition="begin with">C:\ProgramData\Mozilla</TargetFilename>
         <TargetFilename condition="begin with">C:\ProgramData\chocolatey\</TargetFilename>
