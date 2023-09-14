@@ -103,7 +103,7 @@
   <DnsLookup>False</DnsLookup>
   <EventFiltering>
   <!--SYSMON EVENT ID 1 : PROCESS CREATION [ProcessCreate]-->
-    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessID, Image, FileVersion, Description, Product, Company, CommandLine, CurrentDirectory, User, LogonGuid, LogonId, TerminalSessionId, IntegrityLevel, Hashes, ParentProcessGuid, ParentProcessId, ParentImage, ParentCommandLine, RuleName-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, FileVersion, Description, Product, Company, OriginalFileName, CommandLine, CurrentDirectory, User, LogonGuid, LogonId, TerminalSessionId, IntegrityLevel, Hashes, ParentProcessGuid, ParentProcessId, ParentImage, ParentCommandLine-->
   <RuleGroup name="RG=ProcessCreate Include Group" groupRelation="or">
     <ProcessCreate onmatch="include">
       <!--MITRE ATT&CK TACTIC: Reconnaissance-->
@@ -3967,7 +3967,7 @@
     <!--TECHNICAL: Cannot be filtered.-->
 
   <!--SYSMON EVENT ID 5 : PROCESS ENDED [ProcessTerminate]-->
-    <!--DATA: UtcTime, ProcessGuid, ProcessId, Image-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, User-->
     <!--COMMENT: Useful data in building infection timelines.-->
   <RuleGroup name="RG=ProcessTerminate Include Group" groupRelation="or">
     <ProcessTerminate onmatch="include">
@@ -4582,7 +4582,7 @@
     </DriverLoad>
   </RuleGroup>
   <!--SYSMON EVENT ID 7 : DLL (IMAGE) LOADED BY PROCESS [ImageLoad]-->
-    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, ImageLoaded, Hashes, Signed, Signature, SignatureStatus-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, ImageLoaded, FileVersion, Description, Product, Company, OriginalFileName, Hashes, Signed, Signature, SignatureStatus, User-->
     <!--COMMENT: Can potentially cause high system load depending on system workload. Monitor performance usage of Sysmon.-->
   <RuleGroup name="RG=Image Load Includes" groupRelation="or">
     <ImageLoad onmatch="include">
@@ -4880,7 +4880,7 @@
     </ImageLoad>
   </RuleGroup>
   <!--SYSMON EVENT ID 8 : REMOTE THREAD CREATED [CreateRemoteThread]-->
-    <!--DATA: RuleName, UtcTime, SourceProcessGuid, SourceProcessId, SourceImage, TargetProcessId, TargetImage, NewThreadId, StartAddress, StartModule, StartFunction-->
+    <!--DATA: RuleName, UtcTime, SourceProcessGuid, SourceProcessId, SourceImage, TargetProcessGuid, TargetProcessId, TargetImage, NewThreadId, StartAddress, StartModule, StartFunction, SourceUser, TargetUser-->
     <!--COMMENT: Monitor for processes injecting code into other processes. Often used by malware to cloak their actions. Also when Firefox loads Flash.-->
   <RuleGroup name="RG=CreateRemoteThread Include Group" groupRelation="or">
     <CreateRemoteThread onmatch="include">
@@ -4976,7 +4976,7 @@
   </RuleGroup>
 
   <!--SYSMON EVENT ID 9 : RAW DISK ACCESS [RawAccessRead]-->
-    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Device-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Device, User-->
     <!--COMMENT: Can cause high system load, disabled by default.-->
     <!--COMMENT: You may want to set this to a full capture on domain controllers, where no process should be doing raw reads.-->
   <RuleGroup name="RG=RawAccessRead Include Group" groupRelation="or">
@@ -4986,7 +4986,7 @@
   </RuleGroup>
 
   <!--SYSMON EVENT ID 10 : INTER-PROCESS ACCESS [ProcessAccess]-->
-    <!--DATA: RuleName, UtcTime, SourceProcessGuid, SourceProcessId, SourceThreadId, SourceImage, TargetProcessGuid, TargetProcessId, TargetImage, GrantedAccess, CallTrace-->
+    <!--DATA: RuleName, UtcTime, SourceProcessGuid, SourceProcessId, SourceThreadId, SourceImage, TargetProcessGuid, TargetProcessId, TargetImage, GrantedAccess, CallTrace, SourceUser, TargetUser-->
   <RuleGroup name="RG=ProcessAccess Include Group" groupRelation="or">
     <ProcessAccess onmatch="include">
       <!--Custom Rules-->
@@ -5241,7 +5241,7 @@
   </RuleGroup>
 
   <!--SYSMON EVENT ID 11 : FILE CREATED [FileCreate]-->
-    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime, User-->
     <!--NOTE:  Other filesystem "minifilters" can make it appear to Sysmon that some files are being written twice. This is not a Sysmon issue, per Mark Russinovich.-->
     <!--NOTE:  You may not see files detected by antivirus. Other filesystem minifilters, like antivirus, can act before Sysmon receives the alert a file was written.-->
   <RuleGroup name="RG=FileCreate Include Group" groupRelation="or">
@@ -6991,7 +6991,7 @@
     <!--EVENT 13: "Registry value set"-->
       <!--DATA: RuleName, UtcTime, EventType, ProcessGuid, ProcessId, Image, TargetObject, Details, User-->
     <!--EVENT 14: "Registry objected renamed"-->
-      <!--DATA: RuleName, UtcTime, EventType, ProcessGuid, ProcessId, Image, TargetObject, NetName, User-->
+      <!--DATA: RuleName, UtcTime, EventType, ProcessGuid, ProcessId, Image, TargetObject, NewName, User-->
     <!--NOTE: Windows writes hundreds or thousands of registry keys a minute, so just because you're not changing things, doesn't mean these rules aren't being run.-->
     <!--NOTE: You do not have to spend a lot of time worrying about performance, CPUs are fast, but it's something to consider. Every rule and condition type has a small cost.-->
     <!--NOTE: "contains" works by finding the first letter, then matching the second, etc, so the first letters should be as low-occurrence as possible.-->
@@ -8909,6 +8909,7 @@
     </RegistryEvent>
   </RuleGroup>
   <!--SYSMON EVENT ID 15 : ALTERNATE DATA STREAM CREATED [FileCreateStreamHash]-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime, Hash, User-->
   <RuleGroup name="RG=ADS Include Group" groupRelation="or">
     <FileCreateStreamHash onmatch="include">
       <Rule name="Attack=None,Technique=None,Tactic=None,DS=File: File Metadata,Level=0,Desc=Interesting Files temp locations,Risk=10" groupRelation="and">
@@ -8961,7 +8962,7 @@
     <!--TECHNICAL: Cannot be filtered.-->
 
   <!--SYSMON EVENT ID 17 & 18 : PIPE CREATED / PIPE CONNECTED [PipeEvent]-->
-    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, PipeName, Image-->
+    <!--DATA: RuleName, UtcTime, EventType, ProcessGuid, ProcessId, PipeName, Image, User-->
   <RuleGroup name="RG=PipeEvent Include Group" groupRelation="or">
     <PipeEvent onmatch="include">
       <Rule name="Attack=T1071,Technique=Application Layer Protocol,Tactic=Command and Control,DS=Named Pipe: Named Pipe Metadata,Level=4,Alert=Cobalt Strike named pipe detected,Risk=100" groupRelation="and">
@@ -9177,16 +9178,19 @@
     </PipeEvent>
   </RuleGroup>
   <!--SYSMON EVENT ID 19 & 20 & 21 : WMI EVENT MONITORING [WmiEvent]-->
-    <!--DATA: EventType, UtcTime, Operation, User, Name, Type, Destination, Consumer, Filter-->
     <!--EVENT 19: "WmiEventFilter activity detected"-->
+      <!--DATA: RuleName, UtcTime, EventType, Operation, User, EventNamespace, Name, Query-->
     <!--EVENT 20: "WmiEventConsumer activity detected"-->
+      <!--DATA: RuleName, UtcTime, EventType, Operation, User, Name, Type, Destination-->
     <!--EVENT 21: "WmiEventConsumerToFilter activity detected"-->
+      <!--DATA: RuleName, UtcTime, EventType, Operation, User, Consumer, Filter-->
   <RuleGroup name="RG=WmiEvent Include Group" groupRelation="or">
     <WmiEvent onmatch="include">
       <Operation name="Attack=T1047,Technique=Windows Management Instrumentation,Tactic=Execution,DS=WMI: WMI Creation" condition="is">Created</Operation>
     </WmiEvent>
   </RuleGroup>
   <!-- SYSMON EVENT ID 22 : DNS Queries-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, QueryName, QueryStatus, QueryResults, Image, User-->
   <RuleGroup name="RG=DNS Query Includes" groupRelation="or">
     <DnsQuery onmatch="include">
       <Rule name="Attack=T1048,Technique=Exfiltration Over Alternative Protocol,Tactic=Exfiltration,DS=Network Traffic: Network Traffic Content,Level=0,Desc=Powershell TXT Record exfiltration" groupRelation="and">
@@ -9663,16 +9667,19 @@
     </DnsQuery>
   </RuleGroup>
   <!-- SYSMON EVENT ID 23 : File Delete and overwrite events which saves a copy to the archivedir: Includes -->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, User, Image, TargetFilename, Hashes, IsExecutable, Archived-->
     <!-- TECHNICAL: Default set to disabled due to disk space implications, enable with care!-->
   <RuleGroup groupRelation="or">
     <FileDelete onmatch="include" />
   </RuleGroup>
   <!-- SYSMON EVENT ID 24 : Clipboard change events, only captures text, not files: Includes -->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Session, ClientInfo, Hashes, Archived, User-->
     <!-- TECHNICAL: Default set to disabled due to privacy implications and potential data you leave for attackers, enable with care!-->
   <RuleGroup groupRelation="or">
     <ClipboardChange onmatch="include" />
   </RuleGroup>
   <!--SYSMON EVENT ID 25 : Process tampering events-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Type, User-->
   <RuleGroup name="RG=Process Tampering Includes" groupRelation="or">
     <ProcessTampering onmatch="include">
       <Rule name="Attack=None,Technique=None,Tactic=None,DS=Network Traffic: Network Traffic Content,Level=0,Desc=Process Tampering Detected" groupRelation="and">
@@ -9692,6 +9699,7 @@
     </ProcessTampering>
   </RuleGroup>
   <!-- SYSMON EVENT ID 26 : File Delete and overwrite events, does NOT save the file: Includes -->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, User, Image, TargetFilename, Hashes, IsExecutable-->
   <RuleGroup groupRelation="or">
     <FileDeleteDetected onmatch="include">
       <TargetFilename condition="contains all">C:\Program Files\Microsoft SQL Server;\Shared\ErrorDumps</TargetFilename>
@@ -9855,7 +9863,7 @@
     </FileDeleteDetected>
   </RuleGroup>
   <!-- SYSMON EVENT ID 29 : File Executable Detected -->
-    <!-- DATA: ProcessGuid, ProcessId, User, Image, TargetFilename, Hashes -->
+    <!-- DATA: RuleName, UtcTime, ProcessGuid, ProcessId, User, Image, TargetFilename, Hashes -->
     <!-- COMMENT: Key Authors in this section are Florian Roth as a majority Contributer from: https://github.com/Neo23x0/sysmon-config/blob/master/sysmonconfig-export.xml -->
   <RuleGroup name="RG=FileExecutable Includes" groupRelation="or">
     <FileExecutableDetected onmatch="include">
