@@ -75,12 +75,11 @@
 
     <!--SYSMON EVENT ID 6 : DRIVER LOADED INTO KERNEL [DriverLoad]-->
     <!--DATA: RuleName, UtcTime, ImageLoaded, Hashes, Signed, Signature, SignatureStatus-->
+    <!--NOTE: Because drivers with bugs can be used to escalate to kernel permissions, be extremely selective about what you exclude from monitoring. Low event volume, little incentive to exclude.-->
     <!--TECHNICAL: Sysmon will check the signing certificate revocation status of any driver you don't exclude.-->
     <RuleGroup name="RG=DriverLoad Exclude Group" groupRelation="or">
       <DriverLoad onmatch="exclude">
         <!--NOTE: Using "exclude" with no rules means everything will be logged-->
-        <!--NOTE: Because drivers with bugs can be used to escalate to kernel permissions, be extremely selective
-        about what you exclude from monitoring. Low event volume, little incentive to exclude.-->
       </DriverLoad>
     </RuleGroup>
 
@@ -97,7 +96,7 @@
 
     <!--SYSMON EVENT ID 8 : REMOTE THREAD CREATED [CreateRemoteThread]-->
     <!--DATA: RuleName, UtcTime, SourceProcessGuid, SourceProcessId, SourceImage, TargetProcessGuid, TargetProcessId, TargetImage, NewThreadId, StartAddress, StartModule, StartFunction, SourceUser, TargetUser-->
-    <!--NOTE: Monitor for processes injecting code into other processes. Often used by malware to cloak their actions. Also when Firefox loads Flash.-->
+    <!--NOTE: Monitor for processes injecting code into other processes. Often used by malware to cloak their actions.-->
     <RuleGroup name="RG=CreateRemoteThread Exclude Group" groupRelation="or">
       <CreateRemoteThread onmatch="exclude">
         <!--NOTE: Using "exclude" with no rules means everything will be logged-->
@@ -149,9 +148,6 @@
     <!--TECHNICAL: Possible prefixes are HKLM, HKCR, and HKU-->
     <!--CRITICAL: Schema version 3.30 and higher change HKLM\="\REGISTRY\MACHINE\" and HKU\="\REGISTRY\USER\" and HKCR\="\REGISTRY\MACHINE\SOFTWARE\Classes\" and CurrentControlSet="ControlSet001"-->
     <!--NOTE: Because Sysmon runs as a service, it has no filtering ability for, or concept of, HKCU or HKEY_CURRENT_USER. Use "contains" or "end with" to get around this limitation-->
-    <!--CRITICAL NOTE: It may appear this section is MISSING important entries, but SOME RULES MONITOR MANY KEYS, so look VERY CAREFULLY to see if something is already covered.-->
-    <!--               Sysmon's wildcard monitoring along with highly-tuned generic strings cuts the rulesets down immensely, compared to doing this in other tools.-->
-    <!--               For example, most COM hijacking in CLSID's across the registry is covered by a single rule monitoring a InProcServer32 wildcard-->
     <RuleGroup name="RG=RegistryEvent Exclude Group" groupRelation="or">
       <RegistryEvent onmatch="exclude">
         <!--NOTE: Using "exclude" with no rules means everything will be logged-->
