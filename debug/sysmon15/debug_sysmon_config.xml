@@ -1,0 +1,275 @@
+<!--                                                                                                                        -->
+<!--                      __  ______                   _       __     __     ______      __                                 -->
+<!--                     / / / / / /__________ __   __(_)___  / /__  / /_   / ____/_  __/ /_  ___  _____                    -->
+<!--                    / / / / / __/ ___/ __ `/ | / / / __ \/ / _ \/ __/  / /   / / / / __ \/ _ \/ ___/                    -->
+<!--                   / /_/ / / /_/ /  / /_/ /| |/ / / /_/ / /  __/ /_   / /___/ /_/ / /_/ /  __/ /                        -->
+<!--                   \____/_/\__/_/   \__,_/ |___/_/\____/_/\___/\__/   \____/\__, /_.___/\___/_/                         -->
+<!--                                                                           /____/                                       -->
+<!--                                                                                 _____                                  -->
+<!--                      _______  ___________ ___  ____  ____     _________  ____  / __(_)___ _                            -->
+<!--                     / ___/ / / / ___/ __ `__ \/ __ \/ __ \   / ___/ __ \/ __ \/ /_/ / __ `/                            -->
+<!--                    (__  ) /_/ (__  ) / / / / / /_/ / / / /  / /__/ /_/ / / / / __/ / /_/ /                             -->
+<!--                   /____/\__, /____/_/ /_/ /_/\____/_/ /_/   \___/\____/_/ /_/_/ /_/\__, /                              -->
+<!--                        /____/                                                     /____/                               -->
+<!--                                                                                                                        -->
+<!--                                                                                                                        -->
+<!--        Author:       Ultraviolet Cyber Detection Engineering                                                           -->
+<!--        Contributors: @benmontour                                                                                       -->
+<!--        Project:      https://github.com/uvcyber/sysmon_config                                                          -->
+<!--        Sysmon:       15.x                                                                                              -->
+<!--        Config:       debug                                                                                             -->
+<!--        License:      Creative Commons Attribution 4.0                                                                  -->
+<!--                      You may privatize, fork, edit, teach, publish, or deploy                                          -->
+<!--                      for commercial use - with attribution in the text.                                                -->
+<!--                                                                                                                        -->
+
+<Sysmon schemaversion="4.90">
+  <HashAlgorithms>*</HashAlgorithms>
+  <CheckRevocation>True</CheckRevocation>
+  <DnsLookup>False</DnsLookup>
+  <EventFiltering>
+
+
+    <!--SYSMON EVENT ID 1 : PROCESS CREATION [ProcessCreate]-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, FileVersion, Description, Product, Company, OriginalFileName, CommandLine, CurrentDirectory, User, LogonGuid, LogonId, TerminalSessionId, IntegrityLevel, Hashes, ParentProcessGuid, ParentProcessId, ParentImage, ParentCommandLine-->
+    <RuleGroup name="RG=ProcessCreate Exclude Group" groupRelation="or">
+      <ProcessCreate onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </ProcessCreate>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 2 : FILE CREATION TIME RETROACTIVELY CHANGED IN THE FILESYSTEM [FileCreateTime]-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime, PreviousCreationUtcTime-->
+    <RuleGroup name="RG=FileCreateTime Exclude Group" groupRelation="or">
+      <FileCreateTime onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </FileCreateTime>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 3 : NETWORK CONNECTION INITIATED [NetworkConnect]-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, User, Protocol, Initiated, SourceIsIpv6, SourceIp, SourceHostname, SourcePort, SourcePortName, DestinationIsIpV6, DestinationIp, DestinationHostname, DestinationPort, DestinationPortName-->
+    <RuleGroup name="RG=NetworkConnect Exclude Group" groupRelation="or">
+      <NetworkConnect onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </NetworkConnect>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 4 : SYSMON SERVICE STATE CHANGED-->
+    <!--DATA: UtcTime, State, Version, SchemaVersion-->
+    <!--NOTE: This is reported in the event of a Sysmon service state change.-->
+    <!--TECHNICAL: Cannot be filtered.-->
+
+
+    <!--SYSMON EVENT ID 5 : PROCESS ENDED [ProcessTerminate]-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, User-->
+    <!--NOTE: Useful data in building infection timelines.-->
+    <RuleGroup name="RG=ProcessTerminate Exclude Group" groupRelation="or">
+      <ProcessTerminate onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </ProcessTerminate>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 6 : DRIVER LOADED INTO KERNEL [DriverLoad]-->
+    <!--DATA: RuleName, UtcTime, ImageLoaded, Hashes, Signed, Signature, SignatureStatus-->
+    <!--NOTE: Because drivers with bugs can be used to escalate to kernel permissions, be extremely selective about what you exclude from monitoring. Low event volume, little incentive to exclude.-->
+    <!--TECHNICAL: Sysmon will check the signing certificate revocation status of any driver you don't exclude.-->
+    <RuleGroup name="RG=DriverLoad Exclude Group" groupRelation="or">
+      <DriverLoad onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </DriverLoad>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 7 : DLL (IMAGE) LOADED BY PROCESS [ImageLoad]-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, ImageLoaded, FileVersion, Description, Product, Company, OriginalFileName, Hashes, Signed, Signature, SignatureStatus, User-->
+    <!--NOTE: Can potentially cause high system load depending on system workload. Monitor performance usage of Sysmon.-->
+    <RuleGroup name="RG=ImageLoad Exclude Group" groupRelation="or">
+      <ImageLoad onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </ImageLoad>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 8 : REMOTE THREAD CREATED [CreateRemoteThread]-->
+    <!--DATA: RuleName, UtcTime, SourceProcessGuid, SourceProcessId, SourceImage, TargetProcessGuid, TargetProcessId, TargetImage, NewThreadId, StartAddress, StartModule, StartFunction, SourceUser, TargetUser-->
+    <!--NOTE: Monitor for processes injecting code into other processes. Often used by malware to cloak their actions.-->
+    <RuleGroup name="RG=CreateRemoteThread Exclude Group" groupRelation="or">
+      <CreateRemoteThread onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </CreateRemoteThread>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 9 : RAW DISK ACCESS [RawAccessRead]-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Device, User-->
+    <!--TECHNICAL: Default set to disabled due to potential for high system load.-->
+    <!--NOTE: You may want to set this to a full capture on domain controllers, where no process should be doing raw reads.-->
+    <RuleGroup name="RG=RawAccessRead Include Group" groupRelation="or">
+      <RawAccessRead onmatch="include">
+        <!--NOTE: Using "include" with no rules means nothing in this section will be logged-->
+      </RawAccessRead>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 10 : INTER-PROCESS ACCESS [ProcessAccess]-->
+    <!--DATA: RuleName, UtcTime, SourceProcessGuid, SourceProcessId, SourceThreadId, SourceImage, TargetProcessGuid, TargetProcessId, TargetImage, GrantedAccess, CallTrace, SourceUser, TargetUser-->
+    <RuleGroup name="RG=ProcessAccess Exclude Group" groupRelation="or">
+      <ProcessAccess onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </ProcessAccess>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 11 : FILE CREATED [FileCreate]-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime, User-->
+    <!--NOTE:  Other filesystem "minifilters" can make it appear to Sysmon that some files are being written twice. This is not a Sysmon issue, per Mark Russinovich.-->
+    <!--NOTE:  You may not see files detected by antivirus. Other filesystem minifilters, like antivirus, can act before Sysmon receives the alert a file was written.-->
+    <RuleGroup name="RG=FileCreate Exclude Group" groupRelation="or">
+      <FileCreate onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </FileCreate>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 12 & 13 & 14 : REGISTRY MODIFICATION [RegistryEvent]-->
+    <!--EVENT 12: "Registry object added or deleted"-->
+    <!--DATA: RuleName, UtcTime, EventType, ProcessGuid, ProcessId, Image, TargetObject, User-->
+    <!--EVENT 13: "Registry value set"-->
+    <!--DATA: RuleName, UtcTime, EventType, ProcessGuid, ProcessId, Image, TargetObject, Details, User-->
+    <!--EVENT 14: "Registry objected renamed"-->
+    <!--DATA: RuleName, UtcTime, EventType, ProcessGuid, ProcessId, Image, TargetObject, NewName, User-->
+    <!--NOTE: Windows writes hundreds or thousands of registry keys a minute, so just because you're not changing things, doesn't mean these rules aren't being run.-->
+    <!--NOTE: You do not have to spend a lot of time worrying about performance, CPUs are fast, but it's something to consider. Every rule and condition type has a small cost.-->
+    <!--NOTE: "contains" works by finding the first letter, then matching the second, etc, so the first letters should be as low-occurrence as possible.-->
+    <!--TECHNICAL: Possible prefixes are HKLM, HKCR, and HKU-->
+    <!--CRITICAL: Schema version 3.30 and higher change HKLM\="\REGISTRY\MACHINE\" and HKU\="\REGISTRY\USER\" and HKCR\="\REGISTRY\MACHINE\SOFTWARE\Classes\" and CurrentControlSet="ControlSet001"-->
+    <!--NOTE: Because Sysmon runs as a service, it has no filtering ability for, or concept of, HKCU or HKEY_CURRENT_USER. Use "contains" or "end with" to get around this limitation-->
+    <RuleGroup name="RG=RegistryEvent Exclude Group" groupRelation="or">
+      <RegistryEvent onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </RegistryEvent>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 15 : ALTERNATE DATA STREAM CREATED [FileCreateStreamHash]-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, TargetFilename, CreationUtcTime, Hash, User-->
+    <RuleGroup name="RG=FileCreateStreamHash Exclude Group" groupRelation="or">
+      <FileCreateStreamHash onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </FileCreateStreamHash>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 16 : SYSMON CONFIGURATION CHANGE-->
+    <!--DATA: UtcTime, Configuration, ConfigurationFileHash-->
+    <!--NOTE: This ONLY logs if the hash of the configuration changes. Running "sysmon.exe -c" with the current configuration will not be logged with Event 16-->
+    <!--TECHNICAL: Cannot be filtered.-->
+
+
+    <!--SYSMON EVENT ID 17 & 18 : PIPE CREATED / PIPE CONNECTED [PipeEvent]-->
+    <!--DATA: RuleName, UtcTime, EventType, ProcessGuid, ProcessId, PipeName, Image, User-->
+    <RuleGroup name="RG=PipeEvent Exclude Group" groupRelation="or">
+      <PipeEvent onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </PipeEvent>
+    </RuleGroup>
+
+
+    <!--SYSMON EVENT ID 19 & 20 & 21 : WMI EVENT MONITORING [WmiEvent]-->
+    <!--EVENT 19: "WmiEventFilter activity detected"-->
+    <!--DATA: RuleName, UtcTime, EventType, Operation, User, EventNamespace, Name, Query-->
+    <!--EVENT 20: "WmiEventConsumer activity detected"-->
+    <!--DATA: RuleName, UtcTime, EventType, Operation, User, Name, Type, Destination-->
+    <!--EVENT 21: "WmiEventConsumerToFilter activity detected"-->
+    <!--DATA: RuleName, UtcTime, EventType, Operation, User, Consumer, Filter-->
+    <RuleGroup name="RG=WmiEvent Exclude Group" groupRelation="or">
+      <WmiEvent onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </WmiEvent>
+    </RuleGroup>
+
+
+    <!-- SYSMON EVENT ID 22 : DNS Queries-->
+    <!--DATA: RuleName, UtcTime, ProcessGuid, ProcessId, QueryName, QueryStatus, QueryResults, Image, User-->
+    <RuleGroup name="RG=DNS Query Exclude Group" groupRelation="or">
+      <DnsQuery onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </DnsQuery>
+    </RuleGroup>
+
+
+    <!-- SYSMON EVENT ID 23 : File Delete and overwrite events which saves a copy to the archivedir: Includes -->
+    <!-- DATA: RuleName, UtcTime, ProcessGuid, ProcessId, User, Image, TargetFilename, Hashes, IsExecutable, Archived -->
+    <!-- TECHNICAL: Default set to disabled due to disk space implications, enable with care! -->
+    <RuleGroup name="RG=FileDelete Include Group" groupRelation="or">
+      <FileDelete onmatch="include">
+        <!--NOTE: Using "include" with no rules means nothing in this section will be logged-->
+      </FileDelete>
+    </RuleGroup>
+
+
+    <!-- SYSMON EVENT ID 24 : Clipboard change events, only captures text, not files: Includes -->
+    <!-- DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Session, ClientInfo, Hashes, Archived, User -->
+    <!-- TECHNICAL: Default set to disabled due to privacy implications and potential data you leave for attackers, enable with care! -->
+    <RuleGroup name="RG=ClipboardChange Include Group" groupRelation="or">
+      <ClipboardChange onmatch="include">
+        <!--NOTE: Using "include" with no rules means nothing in this section will be logged-->
+      </ClipboardChange>
+    </RuleGroup>
+
+
+    <!-- SYSMON EVENT ID 25 : Process tampering events -->
+    <!-- DATA: RuleName, UtcTime, ProcessGuid, ProcessId, Image, Type, User -->
+    <RuleGroup name="RG=Process Tampering Exclude Group" groupRelation="or">
+      <ProcessTampering onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </ProcessTampering>
+    </RuleGroup>
+
+
+    <!-- SYSMON EVENT ID 26 : File Delete and overwrite events, does NOT save the file: Includes -->
+    <!-- DATA: RuleName, UtcTime, ProcessGuid, ProcessId, User, Image, TargetFilename, Hashes, IsExecutable -->
+    <!-- TECHNICAL: Default set to disabled due to volume of events, enable with care! -->
+    <RuleGroup name="RG=FileDeleteDetected Include Group" groupRelation="or">
+      <FileDeleteDetected onmatch="include">
+        <!--NOTE: Using "include" with no rules means nothing in this section will be logged-->
+      </FileDeleteDetected>
+    </RuleGroup>
+
+
+    <!-- SYSMON EVENT ID 27 : File Block Executable and overwrite events: Includes -->
+    <!-- TECHNICAL: Default set to disabled due to potential unwanted blocks, enable with care! -->
+    <RuleGroup name="RG=FileBlockExecutable Include Group" groupRelation="or">
+      <FileBlockExecutable onmatch="include">
+        <!--NOTE: Using "include" with no rules means nothing in this section will be logged-->
+      </FileBlockExecutable>
+    </RuleGroup>
+
+
+    <!-- SYSMON EVENT ID 28 : File Block Shredding events: Includes -->
+    <!-- TECHNICAL: Default set to disabled due to potential unwanted blocks, enable with care! -->
+    <RuleGroup name="RG=FileBlockShredding Include Group" groupRelation="or">
+      <FileBlockShredding onmatch="include">
+        <!--NOTE: Using "include" with no rules means nothing in this section will be logged-->
+      </FileBlockShredding>
+    </RuleGroup>
+
+    <!-- SYSMON EVENT ID 29 : File Executable Detected -->
+    <!-- DATA: RuleName, UtcTime, ProcessGuid, ProcessId, User, Image, TargetFilename, Hashes -->
+    <RuleGroup name="RG=FileExecutable Exclude Group" groupRelation="or">
+      <FileExecutableDetected onmatch="exclude">
+        <!--NOTE: Using "exclude" with no rules means everything will be logged-->
+      </FileExecutableDetected>
+    </RuleGroup>
+
+    <!--SYSMON EVENT ID 255 : SYSMON ERROR-->
+    <!--DATA: UtcTime, ID, Description-->
+    <!--NOTE: This event is generated when an error occurs within Sysmon.-->
+    <!--TECHNICAL: Cannot be filtered.-->
+
+  </EventFiltering>
+</Sysmon>
